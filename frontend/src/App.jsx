@@ -6,6 +6,7 @@ import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import InterviewRoom from './pages/InterviewRoom';
 import Report from './pages/Report';
+import ResetPassword from './pages/ResetPassword';
 
 // Simple PrivateRoute wrapper
 const PrivateRoute = ({ children }) => {
@@ -21,6 +22,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route
             path="/dashboard"
             element={

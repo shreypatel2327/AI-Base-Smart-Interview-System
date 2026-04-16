@@ -1,14 +1,17 @@
 const nodemailer = require('nodemailer');
 
 const createTransporter = () => {
-    // Basic setup for nodemailer. 
-    // In production, configure SMTP host, port, secure, auth inside .env
     return nodemailer.createTransport({
-        service: 'gmail', // Standard fallback, can configure SMTP via env
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // STARTTLS
         auth: {
-            user: process.env.EMAIL_USER || 'test@example.com',
-            pass: process.env.EMAIL_PASS || 'password123'
-        }
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        },
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 10000,
     });
 };
 
@@ -43,8 +46,9 @@ exports.sendPasswordResetEmail = async (toEmail, resetToken) => {
     try {
         const transporter = createTransporter();
         
-        // In a real app, this URL points to the frontend reset password route
-        const resetUrl = `http://localhost:3000/reset-password/${resetToken}`;
+        // The URL points to the frontend reset password route
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
 
         const mailOptions = {
             from: process.env.EMAIL_USER || 'no-reply@ai-interview.com',
