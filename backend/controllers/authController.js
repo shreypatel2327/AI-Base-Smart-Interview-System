@@ -21,22 +21,18 @@ exports.registerUser = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Please fill all required fields.' });
         }
 
-        // 1. Check if email exists
         let user = await User.findOne({ email });
 
         if (user) {
-            // 2. IF isVerified === true → Reject
             if (user.isVerified) {
                 return res.status(400).json({ success: false, message: 'An account with this email already exists.' });
             }
 
-            // 3. IF isVerified === false → Update OTP and Resend
             const otp = Math.floor(100000 + Math.random() * 900000).toString();
             const hashedOtp = crypto.createHash('sha256').update(otp).digest('hex');
-            
+
             user.otp = hashedOtp;
             user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-            // If they provided a new password, update it
             if (password) {
                 const salt = await bcrypt.genSalt(10);
                 user.password = await bcrypt.hash(password, salt);
@@ -45,7 +41,7 @@ exports.registerUser = async (req, res) => {
 
             console.log(`[Signup] Updating OTP for existing unverified user: ${email}...`);
             const sent = await sendVerificationEmail(email, otp);
-            
+
             if (!sent) {
                 return res.status(500).json({ success: false, message: 'Failed to send verification email.' });
             }
@@ -56,7 +52,6 @@ exports.registerUser = async (req, res) => {
             });
         }
 
-        // 4. ELSE → Create new user (isVerified = false)
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -75,12 +70,11 @@ exports.registerUser = async (req, res) => {
 
         console.log(`[Signup] Creating new user and sending OTP to ${email}...`);
         const sent = await sendVerificationEmail(email, otp);
-        
+
         if (!sent) {
-            // Even if email fails, user is saved as unverified. They can use resend later.
-            return res.status(201).json({ 
-                success: true, 
-                message: 'User registered, but email failed to send. Please request a new OTP.' 
+            return res.status(201).json({
+                success: true,
+                message: 'User registered, but email failed to send. Please request a new OTP.'
             });
         }
 
@@ -114,7 +108,6 @@ exports.verifyOtp = async (req, res) => {
             return res.status(400).json({ success: false, message: 'User is already verified.' });
         }
 
-        // Check expiry
         if (user.otpExpiry < new Date()) {
             return res.status(400).json({ success: false, message: 'OTP has expired. Please request a new one.' });
         }
@@ -124,7 +117,6 @@ exports.verifyOtp = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Invalid OTP. Please try again.' });
         }
 
-        // success
         user.isVerified = true;
         user.otp = undefined;
         user.otpExpiry = undefined;
@@ -228,7 +220,6 @@ exports.forgotPassword = async (req, res) => {
 
         const user = await User.findOne({ email, isVerified: true });
         if (!user) {
-            // Keep it vague for security
             return res.status(200).json({ success: true, message: 'If this email exists, a reset link has been sent.' });
         }
 
@@ -289,26 +280,30 @@ exports.resetPassword = async (req, res) => {
 };
 
 /* ─────────────────────────────────────────────────────────────────
-   7. Social Login (Google only, GitHub moved to dedicated flow)
+   7. Social Login (Google only)
    ───────────────────────────────────────────────────────────────── */
 exports.socialLogin = async (req, res) => {
     try {
-            });
-            providerId = ghUser.data.id.toString();
-            const primaryEmail = ghEmails.data.find(e => e.primary);
-            email = primaryEmail ? primaryEmail.email : ghUser.data.email;
-            const nameParts = (ghUser.data.name || ghUser.data.login || '').split(' ');
-            firstName = nameParts[0] || 'GitHub User';
-            lastName = nameParts.slice(1).join(' ') || '';
-        } else {
-            return res.status(400).json({ success: false, message: 'Invalid provider.' });
-        }
+        const { provider, credential } = req.body;
+        if (provider !== 'google') return res.status(400).json({ success: false, message: 'Invalid social provider.' });
+
+        const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+        const ticket = await client.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+
+        const email = payload.email;
+        const firstName = payload.given_name;
+        const lastName = payload.family_name;
+        const providerId = payload.sub;
 
         let user = await User.findOne({ email });
         if (!user) {
-            user = await User.create({ firstName, lastName, email, isVerified: true, provider, providerId });
+            user = await User.create({ firstName, lastName, email, isVerified: true, provider: 'google', providerId });
         } else {
-            user.provider = provider;
+            user.provider = 'google';
             user.providerId = providerId;
             user.isVerified = true;
             await user.save({ validateBeforeSave: false });
@@ -325,12 +320,118 @@ exports.socialLogin = async (req, res) => {
         });
     } catch (error) {
         console.error('[Social Login Error]', error);
-        res.status(500).json({ success: false, message: 'Social login failed.', error: error.message });
+        res.status(500).json({ success: false, message: 'Google login failed.', error: error.message });
     }
 };
 
 /* ─────────────────────────────────────────────────────────────────
-   8. Get Current User
+   8. GitHub OAuth Flow (Backend Driven)
+   ───────────────────────────────────────────────────────────────── */
+exports.githubAuth = async (req, res) => {
+    const state = crypto.randomBytes(16).toString('hex');
+    // Using lax for development on multiple ports
+    res.cookie('github_state', state, {
+        httpOnly: true,
+        secure: false, // process.env.NODE_ENV === 'production'
+        sameSite: 'lax',
+        maxAge: 300000 // 5 mins
+    });
+
+    const githubUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&scope=user:email&state=${state}`;
+    console.log(`[GitHub Auth] Initiated. State: ${state}`);
+    res.redirect(githubUrl);
+};
+
+exports.githubCallback = async (req, res) => {
+    try {
+        const { code, state } = req.query;
+        const savedState = req.cookies.github_state;
+
+        // 1. Clear state cookie immediately with consistent options
+        res.clearCookie('github_state', { 
+            httpOnly: true, 
+            secure: false, 
+            sameSite: 'lax' 
+        });
+
+        console.log(`[GitHub Callback] Callback received. State from URL: ${state}, State from Cookie: ${savedState}`);
+
+        // 2. Validate state
+        if (!state || state !== savedState) {
+            console.error('[GitHub Callback] State mismatch or missing.');
+            const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+            return res.redirect(`${frontendUrl}/auth?error=CSRF attack detected. State from URL: ${state || 'none'}, Saved cookie: ${savedState || 'none'}`);
+        }
+
+        // 3. Exchange code for access token
+        console.log('[GitHub Callback] Exchanging code for access token...');
+        const tokenResponse = await axios.post('https://github.com/login/oauth/access_token', {
+            client_id: process.env.GITHUB_CLIENT_ID,
+            client_secret: process.env.GITHUB_CLIENT_SECRET,
+            code,
+        }, { headers: { Accept: 'application/json' } });
+
+        console.log('[GitHub Callback] Token Exchange Response:', tokenResponse.data);
+
+        const accessToken = tokenResponse.data.access_token;
+        if (!accessToken) {
+            console.error('[GitHub Callback] No access token received from GitHub:', tokenResponse.data);
+            const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+            return res.redirect(`${frontendUrl}/auth?error=GitHub token exchange failed.`);
+        }
+
+        // 4. Fetch User Profile
+        console.log('[GitHub Callback] Fetching profile...');
+        const userRes = await axios.get('https://api.github.com/user', {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        });
+
+        // 5. Fetch User Emails
+        console.log('[GitHub Callback] Fetching emails...');
+        const emailsRes = await axios.get('https://api.github.com/user/emails', {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        });
+
+        const primaryEmail = emailsRes.data.find(e => e.primary)?.email || userRes.data.email || `${userRes.data.login}@github.local`;
+        const providerId = userRes.data.id.toString();
+        const [firstName, ...lastNameParts] = (userRes.data.name || userRes.data.login).split(' ');
+        const lastName = lastNameParts.join(' ');
+
+        // 6. Login or Create User
+        let user = await User.findOne({ email: primaryEmail });
+        if (!user) {
+            user = await User.create({
+                firstName,
+                lastName,
+                email: primaryEmail,
+                isVerified: true,
+                provider: 'github',
+                providerId
+            });
+            console.log(`[GitHub Callback] New GitHub user created: ${primaryEmail}`);
+        } else {
+            user.provider = 'github';
+            user.providerId = providerId;
+            user.isVerified = true;
+            await user.save({ validateBeforeSave: false });
+            console.log(`[GitHub Callback] GitHub user logged in: ${primaryEmail}`);
+        }
+
+        const token = generateToken(user._id);
+        const frontendUrl = process.env.FRONTEND_URL || (req.headers.referer ? new URL(req.headers.referer).origin : 'http://localhost:5173');
+        const redirectUrl = `${frontendUrl}/dashboard?token=${token}&userId=${user.id}&name=${encodeURIComponent(user.firstName + ' ' + (user.lastName || ''))}`;
+
+        console.log(`[GitHub Callback] Success. Redirecting to: ${redirectUrl.split('?')[0]}`);
+        res.redirect(redirectUrl);
+    } catch (error) {
+        console.error('[GitHub Callback Error]', error.response?.data || error.message);
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        res.redirect(`${frontendUrl}/auth?error=GitHub auth failed.`);
+    }
+};
+
+/* ─────────────────────────────────────────────────────────────────
+   9. Get Current User
    ───────────────────────────────────────────────────────────────── */
 exports.getMe = async (req, res) => {
     res.status(200).json({

@@ -1,16 +1,35 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { BrainCircuit, LogOut, LayoutDashboard } from 'lucide-react';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const token = localStorage.getItem('token');
-  const userName = localStorage.getItem('userName');
+  const location = useLocation();
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [userName, setUserName] = useState(localStorage.getItem('userName'));
+
+  // Sync auth state when location changes or on mount
+  useEffect(() => {
+    setToken(localStorage.getItem('token'));
+    setUserName(localStorage.getItem('userName'));
+  }, [location]);
+
+  // Listen for storage events (e.g., from other tabs)
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setToken(localStorage.getItem('token'));
+      setUserName(localStorage.getItem('userName'));
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     localStorage.removeItem('userName');
+    setToken(null);
+    setUserName(null);
     navigate('/auth');
   };
 

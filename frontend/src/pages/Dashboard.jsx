@@ -11,6 +11,25 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // ── OAuth Token Capture & URL Scrubbing ────────────────
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    const userId = params.get('userId');
+    const name = params.get('name');
+
+    if (token && userId) {
+      console.log("[OAuth Debug] Token from URL:", token);
+      localStorage.setItem('token', token);
+      localStorage.setItem('userId', userId);
+      if (name) localStorage.setItem('userName', decodeURIComponent(name));
+      
+      console.log("[OAuth Debug] Token in localStorage:", localStorage.getItem("token"));
+
+      // Remove sensitive data from URL and history AFTER saving
+      window.history.replaceState({}, document.title, window.location.pathname);
+      console.log('[Auth] Session captured from URL and scrubbed.');
+    }
+
     fetchInterviews();
     fetchActiveResume();
   }, []);

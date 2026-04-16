@@ -5,6 +5,7 @@ import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import api from '../services/api';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID';
+const BACKEND_URL = import.meta.env.VITE_API_BASE_URL?.replace('/api', '') || 'http://localhost:5000';
 
 // View states
 const VIEW = {
@@ -82,6 +83,15 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Check for URL errors or success
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const urlError = params.get('error');
+    if (urlError) {
+      setError(urlError);
+    }
+  }, []);
+
   // clear messages when switching view
   useEffect(() => { setError(''); setSuccess(''); }, [view]);
 
@@ -89,7 +99,7 @@ const Auth = () => {
 
   const saveSession = (data) => {
     localStorage.setItem('token', data.token);
-    localStorage.setItem('userId', data._id);
+    localStorage.setItem('userId', data._id || data.userId);
     localStorage.setItem('userName', data.name);
     navigate('/dashboard');
   };
@@ -182,6 +192,11 @@ const Auth = () => {
     } finally { setLoading(false); }
   };
 
+  /* ── GITHUB SOCIAL LOGIN ────── */
+  const handleGithubLogin = () => {
+    window.location.href = `${BACKEND_URL}/api/auth/github`;
+  };
+
   /* ── RENDER HELPERS ─────────── */
   const renderInputField = ({ label, name, type = 'text', placeholder, icon: Icon, required = true }) => (
     <div className="input-group" style={{ marginBottom: '18px' }}>
@@ -208,20 +223,30 @@ const Auth = () => {
     </div>
   );
 
-  const renderGoogleButton = () => (
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
-        <GoogleLogin
-          onSuccess={handleGoogleSuccess}
-          onError={() => setError('Google login failed. Please try again.')}
-          useOneTap={false}
-          shape="rectangular"
-          size="large"
-          text={view === VIEW.LOGIN ? 'signin_with' : 'signup_with'}
-          theme="filled_black"
-        />
-      </div>
-    </GoogleOAuthProvider>
+  const renderSocialButtons = () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginBottom: '16px' }}>
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => setError('Google login failed.')}
+            useOneTap={false}
+            shape="rectangular"
+            size="large"
+            text={view === VIEW.LOGIN ? 'signin_with' : 'signup_with'}
+            theme="filled_black"
+          />
+      </GoogleOAuthProvider>
+
+      <button 
+        type="button" 
+        onClick={handleGithubLogin} 
+        style={styles.githubBtn}
+        className="btn"
+      >
+        <Lock size={20} /> 
+        {view === VIEW.LOGIN ? 'Sign in with GitHub' : 'Sign up with GitHub'}
+      </button>
+    </div>
   );
 
   /* ── VIEW: LOGIN ──────────────────── */
@@ -250,7 +275,7 @@ const Auth = () => {
         </form>
 
         {renderSocialDivider()}
-        {renderGoogleButton()}
+        {renderSocialButtons()}
 
         <p style={styles.toggleText}>
           Don't have an account?{' '}
@@ -301,7 +326,7 @@ const Auth = () => {
         </form>
 
         {renderSocialDivider()}
-        {renderGoogleButton()}
+        {renderSocialButtons()}
 
         <p style={styles.toggleText}>
           Already have an account?{' '}
@@ -455,6 +480,12 @@ const styles = {
     cursor: 'pointer', fontSize: '0.9rem', marginBottom: '20px',
     padding: 0,
   },
+  githubBtn: {
+    width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    gap: '12px', background: '#24292e', color: 'white', border: 'none',
+    padding: '12px', borderRadius: '4px', fontSize: '14px', fontWeight: '500',
+    cursor: 'pointer', transition: 'background 0.2s',
+  }
 };
 
 export default Auth;

@@ -11,7 +11,12 @@ import ResetPassword from './pages/ResetPassword';
 // Simple PrivateRoute wrapper
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('token');
-  return token ? children : <Navigate to="/auth" />;
+  const params = new URLSearchParams(window.location.search);
+  const urlToken = params.get('token');
+  
+  console.log('[PrivateRoute Debug]', { storageToken: !!token, urlToken: !!urlToken });
+  
+  return (token || urlToken) ? children : <Navigate to="/auth" />;
 };
 
 function App() {
