@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Auth from './pages/Auth';
@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import InterviewRoom from './pages/InterviewRoom';
 import Report from './pages/Report';
 import ResetPassword from './pages/ResetPassword';
+import Pricing from './pages/Pricing';
 
 // Simple PrivateRoute wrapper
 const PrivateRoute = ({ children }) => {
@@ -19,10 +20,16 @@ const PrivateRoute = ({ children }) => {
   return (token || urlToken) ? children : <Navigate to="/auth" />;
 };
 
+const NavbarWrapper = () => {
+  const location = useLocation();
+  if (location.pathname === '/pricing') return null;
+  return <Navbar />;
+};
+
 function App() {
   return (
     <Router>
-      <Navbar />
+      <NavbarWrapper />
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -49,6 +56,14 @@ function App() {
             element={
               <PrivateRoute>
                 <Report />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/pricing"
+            element={
+              <PrivateRoute>
+                <Pricing />
               </PrivateRoute>
             }
           />

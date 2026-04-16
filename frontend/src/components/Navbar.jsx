@@ -37,9 +37,18 @@ const Navbar = () => {
     <nav style={styles.nav} className="glass-panel">
       <div style={styles.navContainer} className="container">
         <Link to="/" style={styles.brand}>
-          <BrainCircuit color="#a855f7" size={28} />
-          <span className="text-gradient">Smart Interview</span>
+          <span>SocraticAI</span>
         </Link>
+        
+        {/* Center Links (Visible only on desktop ideally, but we'll show them) */}
+        {!token && (
+          <div style={styles.centerNav}>
+            <Link to="/" style={styles.navLinkItem}>Platform</Link>
+            <Link to="/" style={styles.navLinkItem}>Resources</Link>
+            <Link to="/" style={styles.navLinkItem}>Pricing</Link>
+          </div>
+        )}
+
         <div style={styles.navLinks}>
           {token ? (
             <>
@@ -54,7 +63,10 @@ const Navbar = () => {
               </button>
             </>
           ) : (
-            <Link to="/auth" className="btn btn-primary">Sign In / Register</Link>
+             <>
+               <Link to="/auth" style={styles.navLinkItem}>Login</Link>
+               <Link to="/auth" style={styles.btnNavPrimary}>Get Started</Link>
+             </>
           )}
         </div>
       </div>
@@ -72,6 +84,8 @@ const styles = {
     borderTop: 'none',
     borderLeft: 'none',
     borderRight: 'none',
+    background: '#0a0d14',
+    borderBottom: '1px solid rgba(255,255,255,0.05)',
   },
   navContainer: {
     display: 'flex',
@@ -94,11 +108,34 @@ const styles = {
     alignItems: 'center',
     gap: '20px',
   },
+  centerNav: {
+    display: 'flex',
+    gap: '30px',
+    position: 'absolute',
+    left: '50%',
+    transform: 'translateX(-50%)'
+  },
+  navLinkItem: {
+    color: '#cbd5e1',
+    textDecoration: 'none',
+    fontSize: '0.9rem',
+    fontWeight: '500',
+    transition: 'color 0.2s',
+  },
+  btnNavPrimary: {
+    backgroundColor: '#8b5cf6',
+    color: '#fff',
+    padding: '8px 20px',
+    borderRadius: '8px',
+    textDecoration: 'none',
+    fontSize: '0.9rem',
+    fontWeight: '600'
+  },
   navItem: {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    color: 'var(--text-main)',
+    color: '#f8fafc',
     textDecoration: 'none',
     fontSize: '1rem',
     fontWeight: '500',
