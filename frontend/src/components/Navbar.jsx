@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { BrainCircuit, LogOut, LayoutDashboard } from 'lucide-react';
+import { Hexagon, LogOut, LayoutDashboard } from 'lucide-react';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -37,7 +37,8 @@ const Navbar = () => {
     <nav style={styles.nav} className="glass-panel">
       <div style={styles.navContainer} className="container">
         <Link to="/" style={styles.brand}>
-          <span>SocraticAI</span>
+          <div style={styles.logoIconBg}><Hexagon size={16} color="#fff" /></div>
+          <span>The Intelligent Layer</span>
         </Link>
         
         {/* Center Links (Visible only on desktop ideally, but we'll show them) */}
@@ -84,8 +85,8 @@ const styles = {
     borderTop: 'none',
     borderLeft: 'none',
     borderRight: 'none',
-    background: '#0a0d14',
-    borderBottom: '1px solid rgba(255,255,255,0.05)',
+    background: '#ffffff',
+    borderBottom: '1px solid rgba(0,0,0,0.05)',
   },
   navContainer: {
     display: 'flex',
@@ -97,11 +98,19 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '10px',
-    fontSize: '1.4rem',
-    fontWeight: 'bold',
+    fontSize: '1.2rem',
+    fontWeight: '700',
     textDecoration: 'none',
-    color: 'var(--text-main)',
-    fontFamily: 'var(--font-heading)'
+    color: '#0f172a',
+    fontFamily: '"Inter", sans-serif'
+  },
+  logoIconBg: {
+    background: '#005af0',
+    padding: '6px',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   navLinks: {
     display: 'flex',
@@ -116,14 +125,14 @@ const styles = {
     transform: 'translateX(-50%)'
   },
   navLinkItem: {
-    color: '#cbd5e1',
+    color: '#475569',
     textDecoration: 'none',
     fontSize: '0.9rem',
     fontWeight: '500',
     transition: 'color 0.2s',
   },
   btnNavPrimary: {
-    backgroundColor: '#8b5cf6',
+    backgroundColor: '#005af0',
     color: '#fff',
     padding: '8px 20px',
     borderRadius: '8px',
@@ -135,7 +144,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    color: '#f8fafc',
+    color: '#0f172a',
     textDecoration: 'none',
     fontSize: '1rem',
     fontWeight: '500',

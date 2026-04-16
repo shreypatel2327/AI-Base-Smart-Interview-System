@@ -549,7 +549,7 @@ const Dashboard = () => {
           color: #3b82f6;
         }
         .btn-upgrade {
-          background-color: #2563eb;
+          background-color: #005af0;
           color: white;
           border: none;
           padding: 12px 24px;

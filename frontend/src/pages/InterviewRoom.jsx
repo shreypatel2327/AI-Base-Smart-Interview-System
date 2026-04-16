@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Bot, Mic, MicOff, Video, MonitorUp, Phone, Flag, Sparkles, MoreHorizontal, LayoutTemplate } from 'lucide-react';
+import { Bot, Mic, MicOff, Video, MonitorUp, Phone, Flag, Sparkles, MoreHorizontal, LayoutTemplate, Hexagon } from 'lucide-react';
 import api from '../services/api';
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -184,15 +184,15 @@ const InterviewRoom = () => {
     <>
       <style dangerouslySetInnerHTML={{__html: `
         :root {
-          --dark-bg: #0B0E14;
-          --panel-bg: rgba(26, 30, 41, 0.4);
-          --panel-border: rgba(255, 255, 255, 0.05);
-          --bubble-ai: #1F2937;
-          --bubble-user: #1E2540;
-          --accent-purple: #A855F7;
-          --accent-purple-glow: rgba(168, 85, 247, 0.4);
-          --text-main: #F3F4F6;
-          --text-muted: #9CA3AF;
+          --dark-bg: #f4f7fb;
+          --panel-bg: rgba(255, 255, 255, 0.95);
+          --panel-border: rgba(0, 0, 0, 0.05);
+          --bubble-ai: #f8fafc;
+          --bubble-user: #005af0;
+          --accent-purple: #005af0;
+          --accent-purple-glow: rgba(0, 90, 240, 0.4);
+          --text-main: #0f172a;
+          --text-muted: #64748b;
         }
 
         body, html {
@@ -230,18 +230,18 @@ const InterviewRoom = () => {
         }
 
         .brand-logo {
-          color: #A855F7;
-          background: rgba(168, 85, 247, 0.1);
+          color: #fff;
+          background: #005af0;
           padding: 8px;
           border-radius: 8px;
         }
 
         .brand-name {
           font-size: 1.25rem;
-          font-family: "Outfit", sans-serif;
+          font-family: "Inter", sans-serif;
           font-weight: 700;
           letter-spacing: -0.5px;
-          color: white;
+          color: var(--text-main);
         }
 
         .pill-badge {
@@ -266,11 +266,13 @@ const InterviewRoom = () => {
           display: flex;
           align-items: center;
           gap: 8px;
-          background-color: rgba(255, 255, 255, 0.05);
+          background-color: #ffffff;
+          border: 1px solid rgba(0,0,0,0.05);
           padding: 8px 16px;
           border-radius: 50px;
           font-size: 0.85rem;
           font-weight: 600;
+          box-shadow: 0 4px 10px rgba(0,0,0,0.02);
         }
 
         .rec-dot {
@@ -335,8 +337,8 @@ const InterviewRoom = () => {
         .question-text {
           font-size: 1.4rem;
           line-height: 1.5;
-          font-weight: 400;
-          color: white;
+          font-weight: 600;
+          color: var(--text-main);
           margin-bottom: 24px;
         }
 
@@ -344,10 +346,10 @@ const InterviewRoom = () => {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          color: #A855F7;
+          color: var(--accent-purple);
           font-size: 0.85rem;
           font-weight: 600;
-          background: rgba(168, 85, 247, 0.1);
+          background: rgba(0, 90, 240, 0.1);
           padding: 6px 16px;
           border-radius: 50px;
         }
@@ -377,15 +379,17 @@ const InterviewRoom = () => {
         }
 
         .mic-button.idle {
-          background-color: rgba(255,255,255,0.05);
-          color: #9CA3AF;
+          background-color: #ffffff;
+          border: 1px solid rgba(0,0,0,0.05);
+          color: #64748b;
+          box-shadow: 0 10px 20px rgba(0,0,0,0.02);
         }
 
         .mic-button.recording {
-          background-color: #B484F5; /* Target image exact mic purple */
-          background: linear-gradient(135deg, #d8b4fe 0%, #a855f7 100%);
+          background-color: #005af0;
+          background: linear-gradient(135deg, #2563eb 0%, #005af0 100%);
           color: white;
-          box-shadow: 0 0 60px rgba(168, 85, 247, 0.4);
+          box-shadow: 0 0 60px rgba(0, 90, 240, 0.4);
         }
 
         .mic-ripple {
@@ -420,8 +424,8 @@ const InterviewRoom = () => {
         }
         
         .finish-button-center {
-           background-color: rgba(255,255,255,0.05);
-           border: 1px solid rgba(255,255,255,0.1);
+           background-color: #005af0;
+           border: none;
            color: white;
            padding: 12px 24px;
            border-radius: 50px;
@@ -433,7 +437,7 @@ const InterviewRoom = () => {
            gap: 8px;
         }
         .finish-button-center:hover:not(:disabled) {
-           background-color: rgba(255,255,255,0.1);
+           background-color: #0046c4;
         }
         .finish-button-center:disabled {
            opacity: 0.5;
@@ -446,8 +450,8 @@ const InterviewRoom = () => {
           bottom: 30px;
           left: 50%;
           transform: translateX(-50%);
-          background-color: rgba(10, 10, 10, 0.8);
-          border: 1px solid rgba(255,255,255,0.05);
+          background-color: rgba(255, 255, 255, 0.9);
+          border: 1px solid rgba(0,0,0,0.05);
           backdrop-filter: blur(20px);
           padding: 12px 24px;
           border-radius: 50px;
@@ -455,6 +459,7 @@ const InterviewRoom = () => {
           align-items: center;
           gap: 24px;
           z-index: 10;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
 
         .dock-btn {
@@ -472,18 +477,18 @@ const InterviewRoom = () => {
         }
 
         .dock-btn:hover {
-          background: rgba(255,255,255,0.1);
-          color: white;
+          background: rgba(0,0,0,0.05);
+          color: var(--text-main);
         }
 
         .dock-btn.active-mic {
-          background: #EF4444;
+          background: #005af0;
           color: white;
         }
 
         /* Transcript Sidebar */
         .transcript-sidebar {
-          background-color: rgba(18, 22, 33, 0.5);
+          background-color: #ffffff;
           border: 1px solid var(--panel-border);
           border-radius: 20px;
           margin-bottom: 24px;
@@ -491,6 +496,7 @@ const InterviewRoom = () => {
           flex-direction: column;
           overflow: hidden;
           position: relative;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.02);
         }
 
         .sidebar-header {
@@ -498,13 +504,13 @@ const InterviewRoom = () => {
           justify-content: space-between;
           align-items: center;
           padding: 24px;
-          border-bottom: 1px solid rgba(255,255,255,0.03);
+          border-bottom: 1px solid rgba(0,0,0,0.03);
         }
 
         .sidebar-header h2 {
           font-size: 1.1rem;
-          font-weight: 500;
-          color: white;
+          font-weight: 600;
+          color: var(--text-main);
           margin: 0;
         }
 
@@ -566,15 +572,15 @@ const InterviewRoom = () => {
           color: var(--text-main);
           border-top-left-radius: 4px;
           align-self: flex-start;
-          border: 1px solid rgba(255,255,255,0.02);
+          border: 1px solid rgba(0,0,0,0.03);
         }
 
         .bubble.user {
           background-color: var(--bubble-user);
-          color: var(--text-main);
+          color: #ffffff;
           border-top-right-radius: 4px;
           align-self: flex-end;
-          border: 1px solid #2B354D;
+          border: 1px solid transparent;
         }
 
         .bubble.ongoing {
@@ -584,19 +590,19 @@ const InterviewRoom = () => {
 
         .sidebar-footer {
           padding: 16px 24px;
-          background: linear-gradient(to top, rgba(18, 22, 33, 1) 40%, rgba(18, 22, 33, 0));
+          background: linear-gradient(to top, rgba(255, 255, 255, 1) 40%, rgba(255, 255, 255, 0));
         }
 
         .assessing-badge {
           display: flex;
           align-items: center;
           gap: 8px;
-          background-color: rgba(99, 102, 241, 0.15);
-          color: #818CF8;
+          background-color: rgba(0, 90, 240, 0.1);
+          color: #005af0;
           padding: 10px 16px;
           border-radius: 50px;
           font-size: 0.8rem;
-          font-weight: 500;
+          font-weight: 600;
           width: fit-content;
         }
 
@@ -612,22 +618,23 @@ const InterviewRoom = () => {
         }
         
         .btn-finish-sidebar {
-           background-color: rgba(255, 255, 255, 0.08);
-           border: 1px solid rgba(255, 255, 255, 0.1);
-           color: white;
+           background-color: #ffffff;
+           border: 1px solid rgba(0,0,0,0.1);
+           color: #ef4444;
            padding: 12px 24px;
            border-radius: 50px;
            font-size: 0.95rem;
-           font-weight: 500;
+           font-weight: 600;
            cursor: pointer;
            display: flex;
            align-items: center;
            gap: 10px;
            transition: background-color 0.2s;
+           box-shadow: 0 4px 10px rgba(0,0,0,0.02);
         }
         
         .btn-finish-sidebar:hover {
-           background-color: rgba(255, 255, 255, 0.15);
+           background-color: #fee2e2;
         }
 
       `}} />

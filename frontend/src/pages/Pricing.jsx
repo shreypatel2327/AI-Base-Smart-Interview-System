@@ -90,7 +90,7 @@ const Pricing = () => {
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f8fafc' }}>
-        <Loader2 className="pulse" size={48} color="#6366f1" />
+        <Loader2 className="pulse" size={48} color="#005af0" />
       </div>
     );
   }
@@ -124,7 +124,7 @@ const Pricing = () => {
           display: flex;
           align-items: center;
           gap: 10px;
-          color: #4f46e5;
+          color: #0046c4;
           font-weight: 700;
           font-size: 1.2rem;
           text-decoration: none;
@@ -151,7 +151,7 @@ const Pricing = () => {
         }
         
         .nav-link.active {
-          border-bottom: 2px solid #6366f1;
+          border-bottom: 2px solid #005af0;
           padding-bottom: 4px;
         }
 
@@ -199,8 +199,8 @@ const Pricing = () => {
         }
 
         .hero h1 span.luminary {
-          color: #6366f1;
-          background: linear-gradient(to right, #6366f1, #a855f7);
+          color: #005af0;
+          background: linear-gradient(to right, #005af0, #0046c4);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
         }
@@ -319,7 +319,7 @@ const Pricing = () => {
           top: 0;
           bottom: 0;
           width: 3px;
-          background-color: #6366f1;
+          background-color: #005af0;
           border-radius: 4px;
         }
 
@@ -353,7 +353,7 @@ const Pricing = () => {
         }
 
         .btn-upgrade {
-          background-color: #4f46e5;
+          background-color: #0046c4;
           color: white;
           box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
         }
@@ -508,7 +508,7 @@ const Pricing = () => {
         <div className="price-card pro">
           <div className="recommended-badge">Recommended</div>
           <h2 className="card-title">
-            PRO <Sparkles size={24} color="#6366f1" fill="#6366f1" />
+            PRO <Sparkles size={24} color="#005af0" fill="#005af0" />
           </h2>
           <p className="card-desc">Unrestricted access for comprehensive career development.</p>
 

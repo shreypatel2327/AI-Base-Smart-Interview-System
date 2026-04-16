@@ -35,7 +35,7 @@ const Report = () => {
   if (loading) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#f8fafc' }}>
-        <Loader2 className="pulse" size={48} color="#2563eb" style={{ marginBottom: '20px' }} />
+        <Loader2 className="pulse" size={48} color="#005af0" style={{ marginBottom: '20px' }} />
         <h2 style={{ color: '#0f172a', fontFamily: 'Inter' }}>Compiling Evaluation...</h2>
         <p style={{ color: '#64748b', fontFamily: 'Inter' }}>Structuring multi-dimensional candidate insights.</p>
       </div>
@@ -49,7 +49,7 @@ const Report = () => {
         <h3 style={{ color: '#0f172a', fontFamily: 'Inter' }}>Evaluation Pending</h3>
         <p style={{ color: '#64748b', marginBottom: '20px', fontFamily: 'Inter' }}>{error}</p>
         <button 
-          style={{ background: '#2563eb', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }} 
+          style={{ background: '#005af0', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }} 
           onClick={() => navigate('/dashboard')}
         >
           Return to Dashboard
@@ -76,7 +76,7 @@ const Report = () => {
           --text-main: #0F172A;
           --text-light: #64748B;
           --border-color: #E2E8F0;
-          --primary-blue: #2563EB;
+          --primary-blue: #005af0;
           --primary-blue-hover: #1D4ED8;
           --success-green: #10B981;
           --warning-orange: #F59E0B;
@@ -776,7 +776,7 @@ const Report = () => {
                 <div className="timeline-header">
                   <h3>Session Sentiment Timeline</h3>
                   <div className="legend">
-                    <div className="legend-item"><div className="legend-dot" style={{background: '#2563EB'}}></div> High Energy</div>
+                    <div className="legend-item"><div className="legend-dot" style={{background: '#005af0'}}></div> High Energy</div>
                     <div className="legend-item"><div className="legend-dot" style={{background: '#93C5FD'}}></div> Neutral</div>
                   </div>
                 </div>

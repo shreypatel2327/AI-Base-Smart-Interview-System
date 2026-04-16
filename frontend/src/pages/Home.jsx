@@ -7,11 +7,11 @@ const Home = () => {
     <>
     <style dangerouslySetInnerHTML={{__html: `
       .home-wrapper {
-        background-color: #0a0d14;
+        background: var(--bg-gradient);
         min-height: 100vh;
         width: 100%;
         font-family: "Inter", sans-serif;
-        color: #fff;
+        color: var(--text-main);
         overflow-x: hidden;
       }
       .section-container {
@@ -39,17 +39,17 @@ const Home = () => {
       .step-line {
         flex: 0.5;
         height: 1px;
-        background-color: #334155;
+        background-color: #e2e8f0;
         margin-top: 20px;
       }
       .mockup-box {
         position: relative;
         width: 100%;
         min-height: 400px;
-        background: linear-gradient(145deg, #1e293b, #0f172a);
+        background: #ffffff;
         border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.05);
-        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.05);
       }
       @media (max-width: 1024px) {
         .features-grid { grid-template-columns: repeat(2, 1fr); }
@@ -97,7 +97,7 @@ const Home = () => {
         {/* Hero Pseudo-Mockup */}
         <div className="mockup-box">
           
-          <div style={{ padding: '40px', fontFamily: 'monospace', color: '#64748b', fontSize: '0.9rem', textAlign: 'left', opacity: 0.6 }}>
+          <div style={{ padding: '40px', fontFamily: 'monospace', color: '#64748b', fontSize: '0.9rem', textAlign: 'left', opacity: 0.8 }}>
              // function simulateRealInterview() &#123;<br/>
              // &nbsp;&nbsp;await analyzeCandidate();<br/>
              // &nbsp;&nbsp;return generateFeedback();<br/>
@@ -110,15 +110,15 @@ const Home = () => {
               <CheckCircle size={14} color="#10b981" />
               <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#10b981', letterSpacing: '1px' }}>A.I. EVALUATION</span>
             </div>
-            <p style={{ fontSize: '0.85rem', color: '#e2e8f0', margin: 0, lineHeight: '1.4' }}>
+            <p style={{ fontSize: '0.85rem', color: '#475569', margin: 0, lineHeight: '1.4' }}>
               "Candidate demonstrated strong logic and systems thinking in the architectural response."
             </p>
           </div>
 
           {/* Floating success rate */}
           <div className="float-card-right" style={styles.floatCardRight}>
-             <span style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#a855f7', display: 'block', lineHeight: '1.1' }}>92%</span>
-             <span style={{ fontSize: '0.65rem', color: '#94a3b8', letterSpacing: '1px' }}>SUCCESS RATE</span>
+             <span style={{ fontSize: '1.8rem', fontWeight: 'bold', color: '#005af0', display: 'block', lineHeight: '1.1' }}>92%</span>
+             <span style={{ fontSize: '0.65rem', color: '#64748b', letterSpacing: '1px' }}>SUCCESS RATE</span>
           </div>
         </div>
       </section>
@@ -138,7 +138,7 @@ const Home = () => {
           <div className="span-2" style={styles.featureCard}>
              <div style={{ marginBottom: '20px' }}>
                <div style={styles.iconCircleDark}>
-                 <MessageSquare size={18} color="#a855f7" />
+                 <MessageSquare size={18} color="#005af0" />
                </div>
              </div>
              <h3 style={styles.cardTitle}>AI Questions</h3>
@@ -154,12 +154,12 @@ const Home = () => {
           </div>
 
           {/* Real-time Feedback Card */}
-          <div style={{...styles.featureCard, ...styles.featureCardPurple}}>
+          <div style={{...styles.featureCard, ...styles.featureCardBlue}}>
              <div style={{ marginBottom: '20px' }}>
                <Zap size={24} color="#fff" />
              </div>
              <h3 style={{...styles.cardTitle, color: '#fff'}}>Real-time Feedback</h3>
-             <p style={{...styles.cardDesc, color: 'rgba(255,255,255,0.8)'}}>
+             <p style={{...styles.cardDesc, color: 'rgba(255,255,255,0.9)'}}>
                Immediate analysis of your voice tone, body language, and technical accuracy as you speak.
              </p>
           </div>
@@ -227,13 +227,13 @@ const Home = () => {
       {/* CTA Section */}
       <section className="section-container" style={styles.ctaSection}>
          <div style={styles.ctaCard}>
-            <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.4rem)', fontWeight: 'bold', marginBottom: '16px' }}>Ready to Ace the Final Round?</h2>
-            <p style={{ color: '#94a3b8', marginBottom: '30px', fontSize: '1rem' }}>
+            <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.4rem)', fontWeight: 'bold', marginBottom: '16px', color: '#ffffff' }}>Ready to Ace the Final Round?</h2>
+            <p style={{ color: '#e2e8f0', marginBottom: '30px', fontSize: '1rem' }}>
               Join 15,000+ candidates who have already landed offers at top<br/>
-              tech companies using SocraticAI.
+              tech companies using The Intelligent Layer.
             </p>
             <div className="cta-buttons" style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
-               <Link to="/auth" style={{...styles.btnPrimary, padding: '12px 32px'}}>Get Started for Free</Link>
+               <Link to="/auth" style={{...styles.btnPrimary, padding: '12px 32px', background: '#ffffff', color: '#0f172a'}}>Get Started for Free</Link>
                <a href="/pricing" style={styles.btnSecondaryDark}>Pricing Plans</a>
             </div>
          </div>
@@ -241,15 +241,15 @@ const Home = () => {
 
       {/* Footer */}
       <footer className="section-container" style={styles.footer}>
-         <div style={{ fontWeight: 'bold', fontSize: '1.2rem', marginBottom: '20px' }}>SocraticAI</div>
+         <div style={{ fontWeight: 'bold', fontSize: '1.2rem', marginBottom: '20px', color: '#0f172a' }}>The Intelligent Layer</div>
          <div style={{ display: 'flex', gap: '20px', fontSize: '0.75rem', color: '#64748b', marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '1px' }}>
             <span>Privacy Policy</span>
             <span>Terms of Service</span>
             <span>Security</span>
             <span>Contact</span>
          </div>
-         <div style={{ fontSize: '0.7rem', color: '#475569' }}>
-            © 2024 SOCRATICAI. THE NEURO-SOCRATIC ENGINE SYSTEM.
+         <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
+            © 2024 THE INTELLIGENT LAYER.
          </div>
       </footer>
 
@@ -287,8 +287,7 @@ const styles = {
     marginBottom: '60px'
   },
   btnPrimary: {
-    backgroundColor: '#8b5cf6',
-    backgroundImage: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)',
+    backgroundColor: '#005af0',
     color: '#fff',
     padding: '12px 28px',
     borderRadius: '8px',
@@ -297,50 +296,53 @@ const styles = {
     fontSize: '0.95rem',
     transition: 'opacity 0.2s',
     border: 'none',
-    boxShadow: '0 4px 14px rgba(139, 92, 246, 0.3)'
+    boxShadow: '0 4px 14px rgba(0, 90, 240, 0.3)'
   },
   btnSecondary: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    color: '#fff',
+    backgroundColor: '#ffffff',
+    color: '#0f172a',
     padding: '12px 28px',
     borderRadius: '8px',
     textDecoration: 'none',
     fontWeight: '600',
     fontSize: '0.95rem',
-    border: '1px solid rgba(255,255,255,0.1)'
+    border: '1px solid rgba(0,0,0,0.1)',
+    boxShadow: '0 2px 5px rgba(0,0,0,0.02)'
   },
   btnSecondaryDark: {
-    backgroundColor: '#1e293b',
+    backgroundColor: 'rgba(255,255,255,0.1)',
     color: '#fff',
     padding: '12px 28px',
     borderRadius: '8px',
     textDecoration: 'none',
     fontWeight: '600',
     fontSize: '0.95rem',
-    border: '1px solid #334155'
+    border: '1px solid rgba(255,255,255,0.3)'
   },
   floatCardLeft: {
     position: 'absolute',
     bottom: '20px',
     left: '20px',
-    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(255,255,255,0.1)',
-    borderRadius: '8px',
+    border: '1px solid rgba(0,0,0,0.05)',
+    borderRadius: '12px',
     padding: '16px',
     maxWidth: '350px',
-    textAlign: 'left'
+    textAlign: 'left',
+    boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
   },
   floatCardRight: {
     position: 'absolute',
     bottom: '20px',
     right: '20px',
-    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(255,255,255,0.1)',
-    borderRadius: '8px',
+    border: '1px solid rgba(0,0,0,0.05)',
+    borderRadius: '12px',
     padding: '16px 24px',
-    textAlign: 'center'
+    textAlign: 'center',
+    boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
   },
   featuresSection: {
     margin: '80px auto',
@@ -356,22 +358,24 @@ const styles = {
     lineHeight: '1.6'
   },
   featureCard: {
-    backgroundColor: '#1e293b',
-    borderRadius: '12px',
+    backgroundColor: '#ffffff',
+    borderRadius: '16px',
     padding: '30px',
-    border: '1px solid #334155',
+    border: '1px solid rgba(0,0,0,0.05)',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    boxShadow: '0 10px 30px rgba(0,0,0,0.02)'
   },
-  featureCardPurple: {
-    background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
-    border: 'none'
+  featureCardBlue: {
+    background: '#005af0',
+    border: 'none',
+    boxShadow: '0 10px 30px rgba(0, 90, 240, 0.2)'
   },
   iconCircleDark: {
     width: '36px',
     height: '36px',
     borderRadius: '50%',
-    backgroundColor: '#cbd5e1',
+    backgroundColor: '#f1f5f9',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center'
@@ -397,11 +401,11 @@ const styles = {
   },
   tag: {
     fontSize: '0.7rem',
-    backgroundColor: '#0f172a',
-    border: '1px solid #334155',
+    backgroundColor: '#f1f5f9',
+    border: '1px solid #e2e8f0',
     padding: '4px 10px',
     borderRadius: '4px',
-    color: '#e2e8f0',
+    color: '#475569',
     fontWeight: '500'
   },
   stepsSection: {
@@ -419,15 +423,16 @@ const styles = {
     width: '40px',
     height: '40px',
     borderRadius: '50%',
-    backgroundColor: '#334155',
-    color: '#e2e8f0',
+    backgroundColor: '#005af0',
+    color: '#ffffff',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontWeight: 'bold',
     marginBottom: '20px',
     zIndex: 2,
-    position: 'relative'
+    position: 'relative',
+    boxShadow: '0 4px 10px rgba(0, 90, 240, 0.2)'
   },
   stepTitle: {
     fontSize: '1.1rem',
@@ -443,14 +448,15 @@ const styles = {
     margin: '100px auto',
   },
   ctaCard: {
-    background: 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)',
+    background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
     borderRadius: '24px',
     padding: '60px 20px',
     textAlign: 'center',
-    border: '1px solid #334155'
+    border: '1px solid rgba(0,0,0,0.1)',
+    boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
   },
   footer: {
-    borderTop: '1px solid #1e293b',
+    borderTop: '1px solid rgba(0,0,0,0.05)',
     padding: '40px 20px',
     display: 'flex',
     flexDirection: 'column',
