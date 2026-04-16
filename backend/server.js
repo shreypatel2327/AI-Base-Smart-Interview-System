@@ -23,6 +23,7 @@ app.use(morgan('dev'));
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/resume', require('./routes/resumeRoutes'));
 app.use('/api/interviews', require('./routes/interviewRoutes'));
+app.use('/api/payment', require('./routes/paymentRoutes'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

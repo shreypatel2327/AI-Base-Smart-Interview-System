@@ -14,6 +14,14 @@ exports.startInterview = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Please upload your resume before starting an interview.' });
         }
 
+        // Limit Check for Free Plan
+        if (req.user.plan === 'free') {
+            const pastInterviewsCount = await Interview.countDocuments({ userId: req.user._id });
+            if (pastInterviewsCount >= 1) {
+                return res.status(403).json({ success: false, message: 'Free plan limit reached. Please upgrade to Pro.' });
+            }
+        }
+
         // Generate the first question using AI
         const firstQuestion = await generateFirstQuestion(resume.extractedText);
 

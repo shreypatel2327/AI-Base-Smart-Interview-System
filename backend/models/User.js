@@ -45,6 +45,14 @@ const userSchema = new mongoose.Schema({
     },
     providerId: {
         type: String
+    },
+    plan: {
+        type: String,
+        enum: ['free', 'pro'],
+        default: 'free'
+    },
+    planExpiry: {
+        type: Date
     }
 }, { timestamps: true });
 

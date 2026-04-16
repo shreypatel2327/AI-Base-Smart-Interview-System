@@ -442,7 +442,9 @@ exports.getMe = async (req, res) => {
             firstName: req.user.firstName,
             lastName: req.user.lastName,
             email: req.user.email,
-            isVerified: req.user.isVerified
+            isVerified: req.user.isVerified,
+            plan: req.user.plan,
+            planExpiry: req.user.planExpiry
         }
     });
 };

@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, FileText, Play, History, Loader2 } from 'lucide-react';
+import { Upload, FileText, Play, History, Loader2, Star } from 'lucide-react';
 import api from '../services/api';
+import { createOrder, verifyPayment, reportFailure } from '../services/paymentService';
 
 const Dashboard = () => {
+  const [user, setUser] = useState(null);
   const [activeResume, setActiveResume] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,9 +33,19 @@ const Dashboard = () => {
       console.log('[Auth] Session captured from URL and scrubbed.');
     }
 
+    fetchUser();
     fetchInterviews();
     fetchActiveResume();
   }, []);
+
+  const fetchUser = async () => {
+    try {
+      const { data } = await api.get('/auth/me');
+      if (data.success) setUser(data.data);
+    } catch (err) {
+      console.error('Failed to fetch user', err);
+    }
+  };
 
   const fetchInterviews = async () => {
     try {
@@ -107,9 +120,68 @@ const Dashboard = () => {
 
     } catch (err) {
       console.error(err);
-      alert(err.response?.data?.message || "Failed to start interview");
+      if (err.response?.status === 403 && err.response?.data?.message.includes('plan limit reached')) {
+        alert("Free plan limit reached. Please upgrade to Pro.");
+      } else {
+        alert(err.response?.data?.message || "Failed to start interview");
+      }
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleUpgradeOptions = async () => {
+    setIsProcessingPayment(true);
+    try {
+      const orderData = await createOrder();
+      
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: orderData.data.amount,
+        currency: "INR",
+        name: "AI Interview Platform",
+        description: "Pro Plan Upgrade",
+        order_id: orderData.data.order_id,
+        handler: async (response) => {
+          try {
+            await verifyPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
+            });
+            alert("Payment Successful! You are now a Pro user.");
+            fetchUser();
+            setIsProcessingPayment(false);
+          } catch (verifyErr) {
+            alert("Payment Verification Failed.");
+            setIsProcessingPayment(false);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+             reportFailure({ order_id: orderData.data.order_id }).catch(e => console.error(e));
+             setIsProcessingPayment(false);
+             alert("Payment Cancelled.");
+          }
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', async function (response){
+         await reportFailure({
+             order_id: response.error.metadata.order_id,
+             payment_id: response.error.metadata.payment_id,
+             error_code: response.error.code,
+             error_reason: response.error.reason
+         });
+         alert("Payment Failed. Please try again.");
+         setIsProcessingPayment(false);
+      });
+      rzp.open();
+    } catch (err) {
+       console.error("Order creation failed", err);
+       alert("Could not initialize payment.");
+       setIsProcessingPayment(false);
     }
   };
 
@@ -168,11 +240,34 @@ const Dashboard = () => {
             className="btn btn-primary" 
             style={{ width: '100%', marginTop: '20px' }} 
             onClick={handleStartInterview}
-            disabled={!activeResume || isUploading}
+            disabled={!activeResume || isUploading || isProcessingPayment}
           >
             {isUploading ? <><Loader2 className="pulse" size={18} /> Processing...</> : "Start Interview Simulator"}
           </button>
         </div>
+
+        {/* Upgrade Plan Section */}
+        {user && user.plan === 'free' && (
+          <div className="glass-panel" style={{...styles.card, background: 'linear-gradient(135deg, rgba(168,85,247,0.1) 0%, rgba(99,102,241,0.1) 100%)', gridColumn: '1 / -1'}}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+               <div style={{ ...styles.iconBox, background: 'rgba(168, 85, 247, 0.2)', width: '56px', height: '56px' }}>
+                 <Star color="#a855f7" size={28} />
+               </div>
+               <div style={{ flex: 1 }}>
+                 <h2 style={{ fontSize: '1.5rem', marginBottom: '4px' }}>Upgrade to Pro Plan</h2>
+                 <p style={{ color: 'var(--text-muted)' }}>You are currently on the Free plan (limit: 1 interview). Get unlimited access and full AI reports.</p>
+               </div>
+               <button 
+                  className="btn btn-primary" 
+                  style={{ padding: '12px 24px' }}
+                  onClick={handleUpgradeOptions}
+                  disabled={isProcessingPayment}
+               >
+                 {isProcessingPayment ? <Loader2 className="pulse" size={18} /> : "Upgrade Now - ₹499"}
+               </button>
+            </div>
+          </div>
+        )}
 
         {/* History Section */}
         <div className="glass-panel" style={styles.card}>

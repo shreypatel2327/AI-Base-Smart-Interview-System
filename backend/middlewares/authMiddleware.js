@@ -23,6 +23,13 @@ const protect = async (req, res, next) => {
                 return res.status(403).json({ success: false, message: 'Not authorized, user email not verified' });
             }
 
+            // Plan expiry check
+            if (req.user.plan === 'pro' && req.user.planExpiry && req.user.planExpiry < Date.now()) {
+                req.user.plan = 'free';
+                req.user.planExpiry = undefined;
+                await req.user.save();
+            }
+
             next();
         } catch (error) {
             console.error(error);
