@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Mic, MicOff, Send, Loader2, StopCircle } from 'lucide-react';
+import { Mic, MicOff, Send, Loader2, StopCircle, Volume2 } from 'lucide-react';
 import api from '../services/api';
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -18,6 +18,37 @@ const InterviewRoom = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [recognition, setRecognition] = useState(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  const speakQuestion = (textToSpeak) => {
+    if (!window.speechSynthesis) return;
+    
+    // Stop any ongoing speech
+    window.speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+    
+    const voices = window.speechSynthesis.getVoices();
+    const englishVoice = voices.find(v => v.lang.startsWith('en')) || voices[0];
+    if (englishVoice) utterance.voice = englishVoice;
+    
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    
+    window.speechSynthesis.speak(utterance);
+  };
+
+  useEffect(() => {
+    if (question && question !== 'Loading next question...') {
+      // Small delay to ensure smooth transition
+      setTimeout(() => speakQuestion(question), 500);
+    }
+    
+    return () => {
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
+    };
+  }, [question]);
 
   useEffect(() => {
     if (SpeechRecognition) {
@@ -70,6 +101,10 @@ const InterviewRoom = () => {
       recognition?.stop();
       setIsRecording(false);
     }
+    
+    if (window.speechSynthesis) {
+       window.speechSynthesis.cancel();
+    }
 
     setIsSubmitting(true);
     try {
@@ -111,7 +146,20 @@ const InterviewRoom = () => {
         
         {/* Question Panel */}
         <div className="glass-panel" style={styles.questionPanel}>
-          <div style={styles.aiBadge}>AI Interviewer</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <div style={styles.aiBadge}>
+              AI Interviewer 
+              {isSpeaking && <span className="pulse" style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#818cf8', marginLeft: '6px' }} />}
+            </div>
+            <button 
+              onClick={() => speakQuestion(question)} 
+              className="btn btn-secondary"
+              style={{ padding: '6px 12px', fontSize: '0.9rem', borderRadius: '50px' }}
+              title="Replay Question"
+            >
+              <Volume2 size={16} /> {isSpeaking ? 'Speaking...' : 'Replay'}
+            </button>
+          </div>
           <h2 style={styles.questionText}>
             {question}
           </h2>
@@ -144,7 +192,7 @@ const InterviewRoom = () => {
             placeholder="Type your answer here or use the microphone to dictate..."
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
-            disabled={isRecording || isSubmitting}
+            disabled={isRecording || isSubmitting || isSpeaking}
           />
 
           <div style={styles.footer}>

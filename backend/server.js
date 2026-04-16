@@ -16,6 +16,7 @@ app.use(morgan('dev'));
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/resume', require('./routes/resumeRoutes'));
 app.use('/api/interviews', require('./routes/interviewRoutes'));
 
 // Error handling middleware

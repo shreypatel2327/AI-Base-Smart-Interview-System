@@ -10,6 +10,14 @@ const resumeSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    fileUrl: {
+        type: String, // Cloudinary URL
+        required: true
+    },
+    publicId: {
+        type: String, // Critical for Cloudinary deletion
+        required: true
+    },
     extractedText: {
         type: String,
         required: true

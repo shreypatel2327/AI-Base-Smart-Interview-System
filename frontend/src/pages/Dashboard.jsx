@@ -4,7 +4,7 @@ import { Upload, FileText, Play, History, Loader2 } from 'lucide-react';
 import api from '../services/api';
 
 const Dashboard = () => {
-  const [file, setFile] = useState(null);
+  const [activeResume, setActiveResume] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,6 +12,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchInterviews();
+    fetchActiveResume();
   }, []);
 
   const fetchInterviews = async () => {
@@ -27,33 +28,60 @@ const Dashboard = () => {
     }
   };
 
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+  const fetchActiveResume = async () => {
+    try {
+      const { data } = await api.get('/resume');
+      if (data.success) setActiveResume(data.data);
+    } catch (err) {
+      if (err.response?.status !== 404) {
+        console.error('Failed to fetch active resume', err);
+      }
+    }
+  };
+
+  const handleFileUpload = async (e) => {
+    const selectedFile = e.target.files[0];
+    if (!selectedFile) return;
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('resume', selectedFile);
+      const uploadRes = await api.post('/resume/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setActiveResume(uploadRes.data.data);
+      e.target.value = null; // reset input
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Failed to upload resume');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleViewPdf = async () => {
+    try {
+      const response = await api.get('/resume/download', {
+        responseType: 'blob'
+      });
+      const fileURL = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      window.open(fileURL, '_blank');
+    } catch (err) {
+      console.error('Failed to open PDF', err);
+      alert('Failed to load PDF. Please try again.');
     }
   };
 
   const handleStartInterview = async () => {
-    if (!file) {
+    if (!activeResume) {
       alert("Please upload your resume first.");
       return;
     }
 
     setIsUploading(true);
     try {
-      // 1. Upload Resume
-      const formData = new FormData();
-      formData.append('resume', file);
-      const uploadRes = await api.post('/interviews/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      
-      const resumeId = uploadRes.data.data.resumeId;
-
-      // 2. Start Interview
-      const startRes = await api.post('/interviews/start', { resumeId });
+      const startRes = await api.post('/interviews/start');
       const interviewId = startRes.data.data.interviewId;
 
       navigate(`/interview/${interviewId}`, { state: { initialData: startRes.data.data } });
@@ -93,20 +121,35 @@ const Dashboard = () => {
               accept="application/pdf"
               id="resume-upload"
               style={{ display: 'none' }}
-              onChange={handleFileChange}
+              onChange={handleFileUpload}
+              disabled={isUploading}
             />
-            <label htmlFor="resume-upload" style={styles.uploadLabel}>
-              <Upload size={24} style={{ marginBottom: '10px', color: 'var(--primary)' }} />
-              <span style={{ fontWeight: '500' }}>{file ? file.name : "Click to upload resume (PDF)"}</span>
-              {!file && <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>Max size 5MB</span>}
-            </label>
+            {activeResume ? (
+              <div style={styles.activeResumeBox}>
+                <FileText color="var(--primary)" size={32} style={{ marginBottom: '10px' }} />
+                <h4 style={{ color: 'var(--text-main)', marginBottom: '4px' }}>{activeResume.originalFileName}</h4>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Uploaded on {new Date(activeResume.createdAt).toLocaleDateString()}</p>
+                <div style={{ marginTop: '16px', display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                  <button type="button" onClick={handleViewPdf} className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem' }}>View PDF</button>
+                  <label htmlFor="resume-upload" className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.85rem', cursor: 'pointer', margin: 0 }}>
+                    {isUploading ? <Loader2 className="pulse" size={14} /> : 'Replace'}
+                  </label>
+                </div>
+              </div>
+            ) : (
+              <label htmlFor="resume-upload" style={{ ...styles.uploadLabel, opacity: isUploading ? 0.5 : 1 }}>
+                {isUploading ? <Loader2 className="pulse" size={24} style={{ marginBottom: '10px', color: 'var(--primary)' }} /> : <Upload size={24} style={{ marginBottom: '10px', color: 'var(--primary)' }} />}
+                <span style={{ fontWeight: '500' }}>{isUploading ? 'Uploading...' : 'Click to upload resume (PDF)'}</span>
+                {!isUploading && <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>Max size 5MB</span>}
+              </label>
+            )}
           </div>
 
           <button 
             className="btn btn-primary" 
             style={{ width: '100%', marginTop: '20px' }} 
             onClick={handleStartInterview}
-            disabled={!file || isUploading}
+            disabled={!activeResume || isUploading}
           >
             {isUploading ? <><Loader2 className="pulse" size={18} /> Processing...</> : "Start Interview Simulator"}
           </button>
@@ -200,6 +243,14 @@ const styles = {
     backgroundColor: 'rgba(0,0,0,0.2)',
     transition: 'all 0.3s',
     marginTop: 'auto',
+    textAlign: 'center'
+  },
+  activeResumeBox: {
+    padding: '30px 20px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   uploadLabel: {
     display: 'flex',
