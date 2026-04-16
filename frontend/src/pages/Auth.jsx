@@ -185,11 +185,6 @@ const Auth = () => {
 
   const renderLeftPanel = () => (
     <div className="auth-left-panel">
-       <div className="auth-logo" onClick={() => navigate('/')}>
-           <div className="logo-icon-bg"><Hexagon size={18} color="#fff" /></div>
-           <span className="logo-text">The Intelligent Layer</span>
-       </div>
-       
        <div className="auth-left-content">
            <h1 className="auth-headline">
                Experience the<br/>
@@ -251,10 +246,8 @@ const Auth = () => {
     <>
       <style dangerouslySetInnerHTML={{__html: `
         .auth-fullscreen {
-          position: fixed;
-          top: 0; left: 0; right: 0; bottom: 0;
+          min-height: calc(100vh - 73px);
           background: linear-gradient(135deg, #f4f7fb 0%, #e0e8f5 100%);
-          z-index: 2000;
           display: flex;
           font-family: "Inter", sans-serif;
           color: #1e293b;

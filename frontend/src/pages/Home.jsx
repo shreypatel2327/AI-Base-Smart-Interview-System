@@ -234,7 +234,7 @@ const Home = () => {
             </p>
             <div className="cta-buttons" style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
                <Link to="/auth" style={{...styles.btnPrimary, padding: '12px 32px', background: '#ffffff', color: '#0f172a'}}>Get Started for Free</Link>
-               <a href="/pricing" style={styles.btnSecondaryDark}>Pricing Plans</a>
+               <Link to="/pricing" style={styles.btnSecondaryDark}>Pricing Plans</Link>
             </div>
          </div>
       </section>

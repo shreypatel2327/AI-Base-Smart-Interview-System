@@ -122,6 +122,7 @@ const Dashboard = () => {
       console.error(err);
       if (err.response?.status === 403 && err.response?.data?.message.includes('plan limit reached')) {
         alert("Free plan limit reached. Please upgrade to Pro.");
+        navigate('/pricing');
       } else {
         alert(err.response?.data?.message || "Failed to start interview");
       }
@@ -640,8 +641,8 @@ const Dashboard = () => {
                 <h3>Upgrade to Pro Plan</h3>
                 <p>You are currently on the Free plan (limit: 1 interview). Get unlimited access and full true AI reports for ₹499.</p>
               </div>
-              <button className="btn-upgrade" onClick={handleUpgradeOptions} disabled={isProcessingPayment}>
-                {isProcessingPayment ? <Loader2 size={16} className="pulse" /> : 'Upgrade Now'}
+              <button className="btn-upgrade" onClick={() => navigate('/pricing')}>
+                Upgrade Now
               </button>
             </div>
           )}
@@ -686,8 +687,8 @@ const Dashboard = () => {
                         </div>
 
                         <div className="activity-score-wrap">
-                          <div className="score-big">{isComplete ? '88%' : '---'}</div>
-                          <div className="score-label">AI CONFIDENCE SCORE</div>
+                          <div className="score-big">{isComplete && interview.report?.score ? `${Math.round(interview.report.score * 10)}%` : '---'}</div>
+                          <div className="score-label">{isComplete && interview.report?.score ? 'AI CONFIDENCE SCORE' : 'AWAITING REPORT'}</div>
                         </div>
                       </div>
                     );
@@ -697,6 +698,7 @@ const Dashboard = () => {
             </div>
 
             {/* Performance */}
+            {/* 
             <div className="performance-col">
               <div className="section-header">
                 <h2>Performance</h2>
@@ -731,6 +733,7 @@ const Dashboard = () => {
                 </p>
               </div>
             </div>
+            */}
           </div>
         </div>
       </div>

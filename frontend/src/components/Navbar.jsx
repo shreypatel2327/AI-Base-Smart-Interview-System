@@ -46,7 +46,7 @@ const Navbar = () => {
           <div style={styles.centerNav}>
             <Link to="/" style={styles.navLinkItem}>Platform</Link>
             <Link to="/" style={styles.navLinkItem}>Resources</Link>
-            <Link to="/" style={styles.navLinkItem}>Pricing</Link>
+            <Link to="/pricing" style={styles.navLinkItem}>Pricing</Link>
           </div>
         )}
 

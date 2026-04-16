@@ -661,6 +661,7 @@ const Report = () => {
                 </div>
               </div>
 
+              {/*
               <div className="card competency-card">
                 <h3>Competency Breakdown</h3>
                 
@@ -704,6 +705,7 @@ const Report = () => {
                   </div>
                 </div>
               </div>
+              */}
 
             </div>
 
@@ -711,6 +713,7 @@ const Report = () => {
             <div className="right-col">
               
               <div className="card">
+                {/*
                 <div className="summary-header">
                   <SparkleIcon />
                   AI Insight Executive Summary
@@ -721,6 +724,7 @@ const Report = () => {
                   though there was a slight hesitation when discussing legacy migration strategies. 
                   Communication is exceptionally clear, utilizing visual metaphors effectively during verbal explanations.
                 </p>
+                */}
 
                 <div className="strengths-grid">
                   <div className="points-col pos">
@@ -732,20 +736,7 @@ const Report = () => {
                         <span>{str}</span>
                       </div>
                     )) : (
-                      <>
-                        <div className="point-item">
-                          <CheckCircle2 color="var(--success-green)" size={16} className="point-icon" />
-                          <span>Articulate design-to-code handoff processes</span>
-                        </div>
-                        <div className="point-item">
-                          <CheckCircle2 color="var(--success-green)" size={16} className="point-icon" />
-                          <span>Strong focus on user accessibility and inclusivity</span>
-                        </div>
-                        <div className="point-item">
-                          <CheckCircle2 color="var(--success-green)" size={16} className="point-icon" />
-                          <span>Maintains high positive sentiment under pressure</span>
-                        </div>
-                      </>
+                      <div className="point-item"><span>No data available</span></div>
                     )}
                   </div>
 
@@ -757,21 +748,13 @@ const Report = () => {
                         <span>{wk}</span>
                       </div>
                     )) : (
-                      <>
-                        <div className="point-item">
-                          <AlertCircle color="var(--warning-orange)" size={16} className="point-icon" />
-                          <span>Clarify experience with large-scale data migrations</span>
-                        </div>
-                        <div className="point-item">
-                          <AlertCircle color="var(--warning-orange)" size={16} className="point-icon" />
-                          <span>Tends to over-explain simple technical concepts</span>
-                        </div>
-                      </>
+                      <div className="point-item"><span>No data available</span></div>
                     )}
                   </div>
                 </div>
               </div>
 
+              {/*
               <div className="card">
                 <div className="timeline-header">
                   <h3>Session Sentiment Timeline</h3>
@@ -796,6 +779,7 @@ const Report = () => {
                   <span>45:00 (End)</span>
                 </div>
               </div>
+              */}
 
             </div>
           </div>

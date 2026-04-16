@@ -22,7 +22,10 @@ const PrivateRoute = ({ children }) => {
 
 const NavbarWrapper = () => {
   const location = useLocation();
-  if (location.pathname === '/pricing') return null;
+  const hideNavbarRoutes = ["/interview"];
+  const shouldHideNavbar = hideNavbarRoutes.some(route => location.pathname.startsWith(route));
+  
+  if (shouldHideNavbar) return null;
   return <Navbar />;
 };
 
@@ -61,11 +64,7 @@ function App() {
           />
           <Route
             path="/pricing"
-            element={
-              <PrivateRoute>
-                <Pricing />
-              </PrivateRoute>
-            }
+            element={<Pricing />}
           />
         </Routes>
       </main>

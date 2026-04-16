@@ -33,6 +33,10 @@ const Pricing = () => {
   };
 
   const handleUpgrade = async () => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
     setIsProcessingPayment(true);
     try {
       const orderData = await createOrder();
@@ -447,6 +451,7 @@ const Pricing = () => {
       ` }} />
 
       {/* Nav */}
+      {/* 
       <nav className="pricing-nav">
         <Link to="/" className="nav-logo">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -465,6 +470,7 @@ const Pricing = () => {
           <button className="btn-logout" onClick={handleLogout}>Logout</button>
         </div>
       </nav>
+      */}
 
       {/* Hero */}
       <div className="hero">
