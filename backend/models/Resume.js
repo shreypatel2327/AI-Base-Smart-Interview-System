@@ -21,6 +21,10 @@ const resumeSchema = new mongoose.Schema({
     extractedText: {
         type: String,
         required: true
+    },
+    fileData: {
+        type: Buffer, // Storing <=5MB pdf directly to bypass CDN restrictions
+        required: false
     }
 }, { timestamps: true });
 

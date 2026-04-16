@@ -63,7 +63,8 @@ exports.uploadResume = async (req, res) => {
                 originalFileName: req.file.originalname,
                 fileUrl: uploadedCloudinaryAsset.secure_url,
                 publicId: uploadedCloudinaryAsset.public_id,
-                extractedText
+                extractedText,
+                fileData: req.file.buffer
             });
 
             console.log(`[Upload Phase] Database save successful. UID: ${resume._id}`);
@@ -108,6 +109,14 @@ exports.downloadResumePdf = async (req, res) => {
             return res.status(404).json({ success: false, message: 'No active resume found' });
         }
 
+        // 1. Primary delivery method: Bypass Cloudinary entirely by serving DB buffer
+        if (resume.fileData && resume.fileData.length > 0) {
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `inline; filename="${resume.originalFileName}"`);
+            return res.send(resume.fileData);
+        }
+
+        // 2. Fallback legacy method (will hit Cloudinary CDN blocks for image/pdf, but works for old raw uploads)
         const https = require('https');
         https.get(resume.fileUrl, (proxyRes) => {
             if (proxyRes.statusCode !== 200) {

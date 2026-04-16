@@ -12,7 +12,8 @@ const uploadPDF = (buffer) => {
         let stream = cloudinary.uploader.upload_stream(
             {
                 folder: "smart-interview",
-                resource_type: "raw" // Must be raw to bypass Cloudinary default PDF CDN block
+                resource_type: "image", // Treating as image lets Cloudinary preview it perfectly in their Media Library platform
+                format: "pdf"
             },
             (error, result) => {
                 if (result) {
