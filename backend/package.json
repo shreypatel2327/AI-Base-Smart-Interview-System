@@ -12,15 +12,22 @@
   "license": "ISC",
   "dependencies": {
     "@google/genai": "^1.50.1",
+    "axios": "^1.15.0",
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.9.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "google-auth-library": "^10.6.2",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.4.1",
     "morgan": "^1.10.1",
     "multer": "^2.1.1",
-    "pdf-parse": "^1.1.4"
+    "nodemailer": "^8.0.5",
+    "pdf-parse": "^1.1.4",
+    "razorpay": "^2.9.6",
+    "streamifier": "^0.1.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

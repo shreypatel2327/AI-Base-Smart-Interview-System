@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const connectDB = require('./config/db');
+const cookieParser = require('cookie-parser');
 
 // Connect to database
 connectDB();
@@ -11,12 +12,18 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cookieParser());
+app.use(cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    credentials: true
+}));
 app.use(morgan('dev'));
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/resume', require('./routes/resumeRoutes'));
 app.use('/api/interviews', require('./routes/interviewRoutes'));
+app.use('/api/payment', require('./routes/paymentRoutes'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

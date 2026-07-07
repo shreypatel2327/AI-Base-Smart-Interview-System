@@ -3,7 +3,6 @@ const router = express.Router();
 const multer = require('multer');
 const { protect } = require('../middlewares/authMiddleware');
 const { 
-    uploadResume, 
     startInterview, 
     answerQuestion, 
     getReport,
@@ -17,7 +16,6 @@ const upload = multer({ storage });
 router.route('/')
     .get(protect, getInterviews);
 
-router.post('/upload', protect, upload.single('resume'), uploadResume);
 router.post('/start', protect, startInterview);
 router.post('/:id/answer', protect, answerQuestion);
 router.get('/:id/report', protect, getReport);

@@ -8,7 +8,8 @@ const _generateContentFallback = async (prompt) => {
     try {
         const ai = initAI();
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            // model: 'gemini-2.5-flash',
+            model: 'gemini-3-flash-preview',
             contents: prompt
         });
         return response.text;
@@ -82,7 +83,7 @@ You must return ONLY a JSON response in the exact following format, without any 
 }`;
 
     const textResult = await _generateContentFallback(prompt);
-    
+
     // Parse JSON
     try {
         // Strip markdown backticks if AI accidentally includes them

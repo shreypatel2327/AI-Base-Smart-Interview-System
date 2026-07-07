@@ -5,41 +5,21 @@ const { generateFirstQuestion, generateNextQuestion, generateFinalReport } = req
 
 const MAX_QUESTIONS = 5;
 
-exports.uploadResume = async (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({ success: false, message: 'Please upload a PDF resume' });
-        }
 
-        const extractedText = await extractTextFromPDF(req.file.buffer);
-
-        const resume = await Resume.create({
-            userId: req.user._id,
-            originalFileName: req.file.originalname,
-            extractedText
-        });
-
-        res.status(201).json({
-            success: true,
-            data: { resumeId: resume._id }
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: 'Server Error during resume upload', error: error.message });
-    }
-};
 
 exports.startInterview = async (req, res) => {
     try {
-        const { resumeId } = req.body;
-
-        if (!resumeId) {
-            return res.status(400).json({ success: false, message: 'Resume ID is required' });
+        const resume = await Resume.findOne({ userId: req.user._id });
+        if (!resume) {
+            return res.status(400).json({ success: false, message: 'Please upload your resume before starting an interview.' });
         }
 
-        const resume = await Resume.findOne({ _id: resumeId, userId: req.user._id });
-        if (!resume) {
-            return res.status(404).json({ success: false, message: 'Resume not found' });
+        // Limit Check for Free Plan
+        if (req.user.plan === 'free') {
+            const pastInterviewsCount = await Interview.countDocuments({ userId: req.user._id });
+            if (pastInterviewsCount >= 1) {
+                return res.status(403).json({ success: false, message: 'Free plan limit reached. Please upgrade to Pro.' });
+            }
         }
 
         // Generate the first question using AI
